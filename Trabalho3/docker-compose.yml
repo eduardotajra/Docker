@@ -1,0 +1,77 @@
+services:
+  db:
+    image: mysql:5.7
+    container_name: wordpress_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - internal
+
+  wordpress1: &wp
+    image: wordpress:latest
+    container_name: wordpress1
+    restart: unless-stopped
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    depends_on:
+      - db
+    volumes:
+      - ./shared_html:/var/www/html
+    networks:
+      - internal
+
+  wordpress2:
+    <<: *wp
+    container_name: wordpress2
+  
+  wordpress3:
+    <<: *wp
+    container_name: wordpress3
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx_balancer
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./shared_html:/usr/share/nginx/html
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - wordpress1
+      - wordpress2
+      - wordpress3
+    networks:
+      - internal
+
+
+  locust:
+      image: locustio/locust:latest
+      container_name: locust
+      restart: unless-stopped
+      volumes:
+        - ./locust:/mnt/locust                # scripts + saída CSV
+      environment:
+        LOCUST_FILE: /mnt/locust/locustfile.py
+        ATTACKED_HOST: http://nginx           # **mesmo nome de serviço**
+        LOCUST_OPTS: "--host=http://nginx --csv=/mnt/locust/results/run"  # CSV
+      ports:
+        - "8089:8089"                         # UI Web do Locust
+      networks:
+        - internal                            # igual aos demais
+
+volumes:
+  db_data:
+
+networks:
+  internal:
+    driver: bridge
