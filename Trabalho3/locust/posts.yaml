@@ -1,9 +1,11 @@
 post_a:
-  id: 1          # ajuste para o ID real do post (imagem 1 MB)
+  id: 8
   label: "Imagem-1MB"
+
 post_b:
-  id: 2          # texto 400 KB
+  id: 11
   label: "Texto-400KB"
+
 post_c:
-  id: 3          # imagem 300 KB
+  id: 13
   label: "Imagem-300KB"
