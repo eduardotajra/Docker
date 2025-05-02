@@ -13,9 +13,8 @@ services:
     networks:
       - internal
 
-  wordpress1: &wp
+  wordpress: 
     image: wordpress:latest
-    container_name: wordpress1
     restart: unless-stopped
     environment:
       WORDPRESS_DB_HOST: db:3306
@@ -29,14 +28,6 @@ services:
     networks:
       - internal
 
-  wordpress2:
-    <<: *wp
-    container_name: wordpress2
-  
-  wordpress3:
-    <<: *wp
-    container_name: wordpress3
-
   nginx:
     image: nginx:latest
     container_name: nginx_balancer
@@ -46,10 +37,6 @@ services:
     volumes:
       - ./shared_html:/usr/share/nginx/html
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
-    depends_on:
-      - wordpress1
-      - wordpress2
-      - wordpress3
     networks:
       - internal
 
