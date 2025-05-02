@@ -1,0 +1,4 @@
+Method,Name,Error,Occurrences
+GET,POST 400 KB (img),HTTPError('500 Server Error: Internal Server Error for url: POST 400 KB (img)'),10
+GET,POST 1 MB,HTTPError('500 Server Error: Internal Server Error for url: POST 1 MB'),9
+GET,POST 400 KB (texto),HTTPError('500 Server Error: Internal Server Error for url: POST 400 KB (texto)'),12
